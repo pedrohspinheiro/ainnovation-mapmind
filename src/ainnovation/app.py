@@ -12,10 +12,11 @@ from langchain_core.messages import SystemMessage #access system messages
 from ainnovation.tools import areas_tool, faculties_tool, search_web_tool
 from ainnovation.retriever import compute_compatibility, format_compatibility
 
+load_dotenv()  # reads GOOGLE_API_KEY from .env
+
+
 #A prompt
 SYSTEM_PROMPT = (Path(__file__).parent / "prompt" / "system.md").read_text(encoding="utf-8")
-
-load_dotenv()  # reads GOOGLE_API_KEY from .env
 
 # Generate the chat interface, including the tools
 chat = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite")
@@ -77,8 +78,8 @@ if __name__ == "__main__":
     QUESTIONS = [
         ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse? Ex: Informática, Saúde, Engenharia, Artes, Biologia, etc."),
         ("competências", f"Agora, diz-me {name}, quais são as tuas competências? Ex: Resolução de Problemas, Liderança, Criatividade, Comunicação, etc."),
-        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Ex: Trabalhar sozinho, em equipa, ou em regime presencial ou online, etc.")
-        ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Flexibilidade de horários, Estabilidade, Segurança, Crescimento Profissional, etc.")
+        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Ex: Trabalhar sozinho, em equipa, ou em regime presencial ou online, etc."),
+        ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Flexibilidade de horários, Estabilidade, Segurança, Crescimento Profissional, etc."),
     ]
 
     profile = {}
