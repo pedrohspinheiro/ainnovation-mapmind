@@ -10,9 +10,10 @@ from pathlib import Path #path to the prompts files
 from langchain_core.messages import SystemMessage #access system messages
 
 from ainnovation.tools import areas_tool, faculties_tool, search_web_tool
+from ainnovation.retriever import compute_compatibility, format_compatibility
 
 #A prompt
-SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "system.md").read_text(encoding="utf-8")
+SYSTEM_PROMPT = (Path(__file__).parent / "prompt" / "system.md").read_text(encoding="utf-8")
 
 load_dotenv()  # reads GOOGLE_API_KEY from .env
 
@@ -74,10 +75,17 @@ if __name__ == "__main__":
     )
     #questions dictionary 
     QUESTIONS = [
+<<<<<<< HEAD
         ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse? Ex: Informática, Saúde, Engenharia, Artes, Biologia, etc."),
         ("competências", f"Agora, diz-me {name}, quais são as tuas competências? Ex: Resolução de Problemas, Liderança, Criatividade, Comunicação, etc."),
         ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Ex: Trabalhar sozinho, em equipa, ou em regime presencial ou online, etc.")
         ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Flexibilidade de horários, Estabilidade, Segurança, Crescimento Profissional, etc.")
+=======
+        ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse?"),
+        ("competências", f"Agora, diz-me {name}, quais são as tuas competências?"),
+        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências?"),
+        ("valores", f"Perfeito, {name}! Por fim, diz-me quais são os teus valores?"),
+>>>>>>> refs/remotes/origin/main
     ]
 
     profile = {}
@@ -89,6 +97,8 @@ if __name__ == "__main__":
         f"- {topic.capitalize()}: {answer or '(sem resposta)'}"
         for topic, answer in profile.items()
     )
+    # Compatibility matrix computed in code from each answer, passed to the model
+    summary += "\n\nMatriz de compatibilidade (calculada em código):\n" + format_compatibility(compute_compatibility(profile))
 
     messages = [HumanMessage(content=summary)]
 

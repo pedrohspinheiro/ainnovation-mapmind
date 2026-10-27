@@ -59,3 +59,77 @@ def search(retriever: BM25Retriever, query: str) -> str:
 
 areas_retriever = build_retriever(AREAS_SHEET, "Área / Percurso Genérico")
 faculties_retriever = build_retriever(FACULTIES_SHEET, "Faculdade / Escola")
+
+
+# --- Compatibility matrix -------------------------------------------------
+# Profile topics (one question each) and the area columns each answer is compared with.
+# There is no "Valores" column yet, so values are compared with motivation and opportunities.
+CRITERIA = {
+    "interesses": ["Interesse & Motivação"],
+    "competencias": ["Competências Desenvolvidas"],
+    "valores": ["Interesse & Motivação", "Vantagens / Oportunidades"],
+    "preferencias": ["Tipo de Trabalho Esperado", "Estilo de Aprendizagem"],
+}
+WEIGHTS = {"interesses": 0.35, "competencias": 0.30, "valores": 0.15, "preferencias": 0.20}
+AREA_COLUMN = "Área / Percurso Genérico"
+MIN_CONFIDENCE = 0.25  # below this best total, the answers are too vague to suggest areas
+
+# Common words in answers that say nothing about the student (compared after preprocess)
+STOPWORDS = {preprocess(w)[0] for w in (
+    "que com para por uma uns umas mais muito muita pouco gosto gostar gosta adoro "
+    "sou tenho também não como isso isto coisas coisa bom boa bem acho porque quando "
+    "minha meu minhas meus tudo algo ser estar fazer area areas"
+).split()}
+
+
+def normalize_topic(topic: str) -> str:
+    """'Competências' -> 'competencias', so the app's keys match CRITERIA."""
+    topic = unicodedata.normalize("NFKD", topic.strip().lower())
+    return "".join(c for c in topic if not unicodedata.combining(c))
+
+
+def answer_words(answer: str) -> list[str]:
+    """Meaningful words of an answer, in their original form (for justifications)."""
+    return [w for w in re.findall(r"\w+", answer) if (p := preprocess(w)) and p[0] not in STOPWORDS]
+
+
+def score_answer(answer: str, text: str) -> tuple[float, list[str]]:
+    """Share of the answer's meaningful words found in the area text (0-1), plus those words."""
+    words = answer_words(answer)
+    text_tokens = set(preprocess(text))
+    matched = [w for w in words if preprocess(w)[0] in text_tokens]
+    return (len(matched) / len(words) if words else 0.0), list(dict.fromkeys(matched))
+
+
+def compute_compatibility(profile: dict[str, str], top: int = 3) -> list[dict]:
+    """Score every area against the student's answers (topic -> free text) and return the best ones."""
+    answers = {normalize_topic(t): a for t, a in profile.items()}
+    areas = read_sheet(AREAS_SHEET)
+    ranking = []
+    for _, row in areas.iterrows():
+        criteria = {}
+        for topic, columns in CRITERIA.items():
+            text = " ".join(str(row[col]) for col in columns)
+            score, matched = score_answer(answers.get(topic, ""), text)
+            criteria[topic] = {"score": round(score, 2), "matched": matched}
+        total = sum(WEIGHTS[t] * c["score"] for t, c in criteria.items())
+        ranking.append({"area": row[AREA_COLUMN], "total": round(total, 2), "criteria": criteria})
+    ranking.sort(key=lambda r: r["total"], reverse=True)
+    return ranking[:top]
+
+
+def format_compatibility(ranking: list[dict]) -> str:
+    """One line per area: total score and, per topic, the score and the student's words that matched."""
+    if not ranking or ranking[0]["total"] < MIN_CONFIDENCE:
+        weak = [t for t in CRITERIA if not any(r["criteria"][t]["matched"] for r in ranking)]
+        return (
+            "CONFIANÇA BAIXA: as respostas não chegam para sugerir áreas. "
+            f"Pede exemplos concretos sobre: {', '.join(weak) or 'todos os tópicos'}."
+        )
+    return "\n".join(
+        f"- {r['area']}: {r['total']:.0%} | " + "; ".join(
+            f"{t} {c['score']:.0%} ({', '.join(c['matched']) or 'sem coincidências'})"
+            for t, c in r["criteria"].items()
+        )
+        for r in ranking
+    )
