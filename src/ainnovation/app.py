@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pathlib import Path #para o caminho do ficheiro
 
-from ainnovation.retriever import areas_tool
-from ainnovation.tools import search_web_tool
+from ainnovation.tools import areas_tool, faculties_tool, search_web_tool
 
 #A prompt
 SYSTEM_PROMPT = prompts("prompts/system.md").read_text(encoding="utf-8")
@@ -18,7 +17,7 @@ load_dotenv()  # reads GOOGLE_API_KEY from .env
 
 # Generate the chat interface, including the tools
 chat = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite")
-tools = [areas_tool, search_web_tool]
+tools = [areas_tool, faculties_tool, search_web_tool]
 chat_with_tools = chat.bind_tools(tools)
 
 # Generate the AgentState and Agent graph
