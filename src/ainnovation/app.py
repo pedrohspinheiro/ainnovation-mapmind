@@ -72,7 +72,7 @@ if __name__ == "__main__":
     "Para te ajudar vou te fazer quatro perguntas, uma de cada vez."
     "Preparado? Então vamos começar!"
     )
-
+    #questions dictionary 
     QUESTIONS = [
         ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse?"),
         ("competências", f"Agora, diz-me {name}, quais são as tuas competências?")
@@ -85,10 +85,15 @@ if __name__ == "__main__":
         print(f"🤖 {question}")
         profile[topic] = input("Tu: ").strip()
 
-    summary = 
+    summary = f"O meu nome é {name}. Estas são as minhas respostas:\n" + "\n".join(
+        f"- {topic.capitalize()}: {answer or '(sem resposta)'}"
+        for topic, answer in profile.items()
+    )
 
-    messages = [AIMessage(content=OPENING)]
-    print(f"🤖 {OPENING}") #to print the opening message
+    messages = [HumanMessage(content=summary)]
+
+    messages = agent.invoke({"messages": messages})["messages"]
+    print_trace(messages, start = 1)
 
 
     while (text := input("Tu: ").strip()):
