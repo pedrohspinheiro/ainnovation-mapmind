@@ -1,43 +1,61 @@
+import re
+import unicodedata
 from pathlib import Path
+import pandas as pd
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
-from langchain_core.tools import Tool
 
-AREAS_FILE = Path(__file__).parent / "data" / "areas.md"
+DATA_FILE = Path(__file__).parent / "data" / "data.xlsx"
+
+# Sheet names in data.xlsx (matched ignoring case and surrounding spaces)
+AREAS_SHEET = "areas"      # generic areas with comparison criteria
+FACULTIES_SHEET = "curso"  # universities/faculties with official links
+
+STEM_LENGTH = 5  # crude Portuguese stemming: "programar" and "Programação" both become "progr"
 
 
-def load_areas_tool() -> Tool:
-    """Load the areas document and return a tool that retrieves matching areas from it."""
-    text = AREAS_FILE.read_text(encoding="utf-8")
-    # Drop the leading HTML comment, then one Document per area block
-    text = text.split("-->", 1)[-1] if text.lstrip().startswith("<!--") else text
-    blocks = [b.strip() for b in text.split("\n---\n") if b.strip()]
-    docs = [
+def preprocess(text: str) -> list[str]:
+    """Lowercase, strip accents and truncate words so related word forms match in BM25."""
+    text = unicodedata.normalize("NFKD", text.lower())
+    text = "".join(c for c in text if not unicodedata.combining(c))
+    return [w[:STEM_LENGTH] for w in re.findall(r"\w+", text) if len(w) > 2]
+
+
+def read_sheet(name: str) -> pd.DataFrame:
+    """Read a sheet by name, ignoring case and surrounding spaces."""
+    sheets = pd.read_excel(DATA_FILE, sheet_name=None)
+    for sheet_name, df in sheets.items():
+        if sheet_name.strip().lower() == name:
+            return df.fillna("")
+    raise ValueError(f"Sheet '{name}' not found in {DATA_FILE.name}; found {list(sheets)}")
+
+
+def load_documents(sheet: str, title_column: str) -> list[Document]:
+    """Turn each row of an Excel sheet into a Document ("column: value" per line)."""
+    df = read_sheet(sheet)
+    return [
         Document(
-            page_content=block,
-            metadata={"area": block.splitlines()[0].removeprefix("Área:").strip()},
+            page_content="\n".join(f"{col}: {row[col]}" for col in df.columns if str(row[col]).strip()),
+            metadata={"title": str(row[title_column])},
         )
-        for block in blocks
+        for _, row in df.iterrows()
     ]
 
-    bm25_retriever = BM25Retriever.from_documents(docs, k=3)
 
-    def retrieve_areas(query: str) -> str:
-        """Retrieves areas of study (interests, skills, pros, cons, doubts) matching a query."""
-        results = bm25_retriever.invoke(query)
-        if results:
-            return "\n\n---\n\n".join(doc.page_content for doc in results)
-        return "Nenhuma área encontrada para esta pesquisa."
-
-    return Tool(
-        name="areas_retriever",
-        func=retrieve_areas,
-        description=(
-            "Pesquisa no documento da equipa as áreas/percursos que correspondem a uma consulta "
-            "(interesses, competências, tipo de trabalho, estilo de aprendizagem). "
-            "Devolve vantagens, desvantagens e dúvidas a esclarecer de cada área."
-        ),
+def build_retriever(sheet: str, title_column: str, k: int = 3) -> BM25Retriever:
+    """Build a BM25 retriever over one sheet of the data file."""
+    return BM25Retriever.from_documents(
+        load_documents(sheet, title_column), k=k, preprocess_func=preprocess
     )
 
 
-areas_tool = load_areas_tool()
+def search(retriever: BM25Retriever, query: str) -> str:
+    """Run a query and join the matching documents into one string."""
+    results = retriever.invoke(query)
+    if results:
+        return "\n\n---\n\n".join(doc.page_content for doc in results)
+    return "Nenhum resultado encontrado para esta pesquisa."
+
+
+areas_retriever = build_retriever(AREAS_SHEET, "Área / Percurso Genérico")
+faculties_retriever = build_retriever(FACULTIES_SHEET, "Faculdade / Escola")
