@@ -67,12 +67,26 @@ def print_trace(messages, start=0, max_chars=150):
 if __name__ == "__main__":
     name = input("Olá, qual é o teu nome? ").strip()
     # Simple chat loop for manual testing
-    OPENING = (
+    print(
     f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
     "Para te ajudar vou te fazer quatro perguntas, uma de cada vez."
     "Preparado? Então vamos começar!"
-    f"Em primeiro lugar, diz-me, {name}, quais são os teus interesses?"
     )
+
+    QUESTIONS = [
+        ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse?"),
+        ("competências", f"Agora, diz-me {name}, quais são as tuas competências?")
+        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências?")
+        ("valores", f"Perfeito, {name}! Por fim, diz-me quais são os teus valores?")
+    ]
+
+    profile = {}
+    for topic, question in QUESTIONS:
+        print(f"🤖 {question}")
+        profile[topic] = input("Tu: ").strip()
+
+    summary = 
+
     messages = [AIMessage(content=OPENING)]
     print(f"🤖 {OPENING}") #to print the opening message
 
