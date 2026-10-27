@@ -75,17 +75,10 @@ if __name__ == "__main__":
     )
     #questions dictionary 
     QUESTIONS = [
-<<<<<<< HEAD
         ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse? Ex: Informática, Saúde, Engenharia, Artes, Biologia, etc."),
         ("competências", f"Agora, diz-me {name}, quais são as tuas competências? Ex: Resolução de Problemas, Liderança, Criatividade, Comunicação, etc."),
         ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Ex: Trabalhar sozinho, em equipa, ou em regime presencial ou online, etc.")
         ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Flexibilidade de horários, Estabilidade, Segurança, Crescimento Profissional, etc.")
-=======
-        ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse?"),
-        ("competências", f"Agora, diz-me {name}, quais são as tuas competências?"),
-        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências?"),
-        ("valores", f"Perfeito, {name}! Por fim, diz-me quais são os teus valores?"),
->>>>>>> refs/remotes/origin/main
     ]
 
     profile = {}
