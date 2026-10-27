@@ -26,6 +26,7 @@ def read_sheet(name: str) -> pd.DataFrame:
     sheets = pd.read_excel(DATA_FILE, sheet_name=None)
     for sheet_name, df in sheets.items():
         if sheet_name.strip().lower() == name:
+            df.columns = df.columns.str.strip()  # e.g. "Valores Pessoais " -> "Valores Pessoais"
             return df.fillna("")
     raise ValueError(f"Sheet '{name}' not found in {DATA_FILE.name}; found {list(sheets)}")
 
@@ -58,16 +59,15 @@ def search(retriever: BM25Retriever, query: str) -> str:
 
 
 areas_retriever = build_retriever(AREAS_SHEET, "Área / Percurso Genérico")
-faculties_retriever = build_retriever(FACULTIES_SHEET, "Faculdade / Escola")
+faculties_retriever = build_retriever(FACULTIES_SHEET, "Nome da Instituição / Faculdade")
 
 
 # --- Compatibility matrix -------------------------------------------------
 # Profile topics (one question each) and the area columns each answer is compared with.
-# There is no "Valores" column yet, so values are compared with motivation and opportunities.
 CRITERIA = {
-    "interesses": ["Interesse & Motivação"],
+    "interesses": ["Interesse & Motivação", "Palavras-Chave (CNA)"],
     "competencias": ["Competências Desenvolvidas"],
-    "valores": ["Interesse & Motivação", "Vantagens / Oportunidades"],
+    "valores": ["Valores Pessoais"],
     "preferencias": ["Tipo de Trabalho Esperado", "Estilo de Aprendizagem"],
 }
 WEIGHTS = {"interesses": 0.35, "competencias": 0.30, "valores": 0.15, "preferencias": 0.20}
