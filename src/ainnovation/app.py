@@ -6,9 +6,13 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
+from pathlib import Path #para o caminho do ficheiro
 
 from ainnovation.retriever import areas_tool
 from ainnovation.tools import search_web_tool
+
+#A prompt
+SYSTEM_PROMPT = prompts("prompts/system.md").read_text(encoding="utf-8")
 
 load_dotenv()  # reads GOOGLE_API_KEY from .env
 
@@ -21,10 +25,9 @@ chat_with_tools = chat.bind_tools(tools)
 class AgentState(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
 
-def assistant(state: AgentState):
-    return {
-        "messages": [chat_with_tools.invoke(state["messages"])],
-    }
+def assistant(state: AgentState): #o nosso assistente, onde mandamos o prompt para nos ajudar
+    messages = [SystemMessage(content=SYSTEM_PROMPT)] + state["messages"]
+    return {"messages": [chat_with_tools.invoke(messages)]}
 
 ## The graph
 builder = StateGraph(AgentState)
@@ -62,8 +65,15 @@ def print_trace(messages, start=0, max_chars=150):
 
 
 if __name__ == "__main__":
+    name = input("Olá, qual é o teu nome? ").strip()
     # Simple chat loop for manual testing
-    messages = []
+    OPENING = f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
+    messages = [AIMessage(content=OPENING)]
+    print(f"🤖 {OPENING}") #to print the opening message
+
+    #first question - will lead us to the next part
+    FIRST_QUESTION = f"Diz-me, {name}, quais sãos os teus interesses, competências, valores e preferências?"
+
     while (text := input("Tu: ").strip()):
         seen = len(messages) + 1  # skip echoing the user message just typed
         messages = agent.invoke({"messages": messages + [HumanMessage(content=text)]})["messages"]
