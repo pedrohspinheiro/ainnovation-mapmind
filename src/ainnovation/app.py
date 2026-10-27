@@ -6,12 +6,13 @@ from langgraph.graph import START, StateGraph
 from langgraph.prebuilt import tools_condition
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
-from pathlib import Path #para o caminho do ficheiro
+from pathlib import Path #path to the prompts files
+from langchain_core.messages import SystemMessage #access system messages
 
 from ainnovation.tools import areas_tool, faculties_tool, search_web_tool
 
 #A prompt
-SYSTEM_PROMPT = prompts("prompts/system.md").read_text(encoding="utf-8")
+SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "system.md").read_text(encoding="utf-8")
 
 load_dotenv()  # reads GOOGLE_API_KEY from .env
 
@@ -66,14 +67,18 @@ def print_trace(messages, start=0, max_chars=150):
 if __name__ == "__main__":
     name = input("Olá, qual é o teu nome? ").strip()
     # Simple chat loop for manual testing
-    OPENING = f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
+    OPENING = (
+    f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
+    "Para te ajudar vou te fazer quatro perguntas, uma de cada vez."
+    "Preparado? Então vamos começar!"
+    f"Em primeiro lugar, diz-me, {name}, quais são os teus interesses?"
+    )
     messages = [AIMessage(content=OPENING)]
     print(f"🤖 {OPENING}") #to print the opening message
 
-    #first question - will lead us to the next part
-    FIRST_QUESTION = f"Diz-me, {name}, quais sãos os teus interesses, competências, valores e preferências?"
 
     while (text := input("Tu: ").strip()):
         seen = len(messages) + 1  # skip echoing the user message just typed
         messages = agent.invoke({"messages": messages + [HumanMessage(content=text)]})["messages"]
         print_trace(messages, start=seen)
+
