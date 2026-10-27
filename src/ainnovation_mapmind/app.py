@@ -9,8 +9,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from pathlib import Path #path to the prompts files
 from langchain_core.messages import SystemMessage #access system messages
 
-from ainnovation.tools import areas_tool, faculties_tool, search_web_tool
-from ainnovation.retriever import compute_compatibility, format_compatibility
+from ainnovation_mapmind.tools import areas_tool, faculties_tool, search_web_tool
+from ainnovation_mapmind.retriever import compute_compatibility, format_compatibility
 
 load_dotenv()  # reads GOOGLE_API_KEY from .env
 

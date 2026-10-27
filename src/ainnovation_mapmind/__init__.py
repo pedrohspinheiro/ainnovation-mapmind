@@ -1,2 +1,2 @@
 def main() -> None:
-    print("Hello from ainnovation!")
+    print("Hello from ainnovation-mapmind!")

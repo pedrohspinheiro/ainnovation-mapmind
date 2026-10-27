@@ -1,6 +1,6 @@
 """Web app for the agent: serves the page and runs the same flow as app.py.
 
-    uv run python -m ainnovation.web          opens http://localhost:8000
+    uv run python -m ainnovation_mapmind.web          opens http://localhost:8000
 
 Endpoints:
     GET  /              -> web/index.html
@@ -18,8 +18,8 @@ from pathlib import Path
 
 from langchain_core.messages import HumanMessage
 
-from ainnovation.app import NAME_QUESTION, agent, answer_texts, build_summary, chat, opening, questions
-from ainnovation.retriever import compute_compatibility
+from ainnovation_mapmind.app import NAME_QUESTION, agent, answer_texts, build_summary, chat, opening, questions
+from ainnovation_mapmind.retriever import compute_compatibility
 
 WEB_DIR = Path(__file__).parent / "web"
 PAGE = WEB_DIR / "index.html"

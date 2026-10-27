@@ -1,7 +1,7 @@
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_core.tools import Tool
 
-from ainnovation.retriever import areas_retriever, faculties_retriever, search
+from ainnovation_mapmind.retriever import areas_retriever, faculties_retriever, search
 
 
 def search_web(query: str) -> str:
