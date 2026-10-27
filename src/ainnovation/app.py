@@ -55,6 +55,8 @@ def print_trace(messages, start=0, max_chars=150):
         if isinstance(m, HumanMessage):
             print(f"{i}. 🧑 USER: {m.text}")
         elif isinstance(m, AIMessage) and m.tool_calls:
+            if m.text:  # the model can write part of the answer alongside its tool calls
+                print(f"{i}. 🤖 ANSWER: {m.text}")
             for call in m.tool_calls:
                 print(f"{i}. 🤖 MODEL → calls tool '{call['name']}' with {call['args']}")
         elif isinstance(m, AIMessage):
@@ -66,35 +68,53 @@ def print_trace(messages, start=0, max_chars=150):
     print()
 
 
-if __name__ == "__main__":
-    name = input("Olá, qual é o teu nome? ").strip() or "estudante"
-    # Simple chat loop for manual testing
-    print(
-    f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
-    "Para te ajudar vou te fazer quatro perguntas, uma de cada vez."
+NAME_QUESTION = "Olá, qual é o teu nome?"  # first thing asked, in the terminal and on the web page
+
+
+def opening(name: str) -> str:
+    """Welcome message shown before the questions."""
+    return (
+    f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos! "
+    "Para te ajudar vou te fazer quatro perguntas, uma de cada vez. "
     "Preparado? Então vamos começar!"
     )
-    #questions dictionary 
-    QUESTIONS = [
-        ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse? Ex: Informática, Saúde, Engenharia, Artes, Biologia, etc."),
-        ("competências", f"Agora, diz-me {name}, quais são as tuas competências? Ex: Resolução de Problemas, Liderança, Criatividade, Comunicação, etc."),
-        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Ex: Trabalhar sozinho, em equipa, ou em regime presencial ou online, etc."),
-        ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Flexibilidade de horários, Estabilidade, Segurança, Crescimento Profissional, etc."),
+
+
+def questions(name: str) -> list[tuple[str, str]]:
+    """The four fixed questions, as (topic, question) pairs."""
+    return [
+        ("interesses", f"Diz-me {name}, quais são as tuas áreas de interesse? Ex: Informática, Medicina, Psicologia, Gestão, Direito, Design, História, Cinema, Ambiente, etc."),
+        ("competências", f"Agora, diz-me {name}, quais são as tuas competências? Ex: Resolução de problemas, Programação, Comunicação, Liderança, Empatia, Argumentação, Criatividade, Investigação, etc."),
+        ("preferências", f"Excelente, {name}! Diz-me agora, quais são as tuas preferências? Como gostas de aprender e trabalhar? Ex: Projetos, Laboratório, Trabalho de campo, Investigação, Debates, Estágios, Startups, etc."),
+        ("valores", f"Perfeito, {name}! Por fim, diz-me o que valorizas. Ex: Empatia, Ética, Justiça, Rigor, Curiosidade, Criatividade, Paciência, Preocupação ambiental, etc."),
     ]
 
-    profile = {}
-    for topic, question in QUESTIONS:
-        print(f"🤖 {question}")
-        profile[topic] = input("Tu: ").strip()
 
+def build_summary(name: str, profile: dict[str, str]) -> str:
+    """First message to the model: the four answers plus the compatibility matrix computed in code."""
     summary = f"O meu nome é {name}. Estas são as minhas respostas:\n" + "\n".join(
         f"- {topic.capitalize()}: {answer or '(sem resposta)'}"
         for topic, answer in profile.items()
     )
-    # Compatibility matrix computed in code from each answer, passed to the model
-    summary += "\n\nMatriz de compatibilidade (calculada em código):\n" + format_compatibility(compute_compatibility(profile))
+    return summary + "\n\nMatriz de compatibilidade (calculada em código):\n" + format_compatibility(compute_compatibility(profile))
 
-    messages = [HumanMessage(content=summary)]
+
+def answer_texts(messages, start=0) -> list[str]:
+    """Text the model wrote to the student from position `start` on (skips tool results)."""
+    return [m.text for m in messages[start:] if isinstance(m, AIMessage) and m.text.strip()]
+
+
+if __name__ == "__main__":
+    name = input(f"{NAME_QUESTION} ").strip() or "estudante"
+    # Simple chat loop for manual testing
+    print(opening(name))
+
+    profile = {}
+    for topic, question in questions(name):
+        print(f"🤖 {question}")
+        profile[topic] = input("Tu: ").strip()
+
+    messages = [HumanMessage(content=build_summary(name, profile))]
 
     messages = agent.invoke({"messages": messages})["messages"]
     print_trace(messages, start = 1)
@@ -104,4 +124,3 @@ if __name__ == "__main__":
         seen = len(messages) + 1  # skip echoing the user message just typed
         messages = agent.invoke({"messages": messages + [HumanMessage(content=text)]})["messages"]
         print_trace(messages, start=seen)
-
