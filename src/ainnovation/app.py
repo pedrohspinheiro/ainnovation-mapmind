@@ -65,7 +65,7 @@ def print_trace(messages, start=0, max_chars=150):
 
 
 if __name__ == "__main__":
-    name = input("Olá, qual é o teu nome? ").strip()
+    name = input("Olá, qual é o teu nome? ").strip() or "estudante"
     # Simple chat loop for manual testing
     print(
     f"Olá, {name}! Vou ser o teu agente para te ajudar a explorar diferentes opções de percursos académicos!"
