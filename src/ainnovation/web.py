@@ -4,6 +4,7 @@
 
 Endpoints:
     GET  /              -> web/index.html
+    GET  /<name>.png    -> images in web/ (logo)
     GET  /api/health    -> {"ok": true, "model": "...", "greeting": "..."}
     POST /api/start     -> {"name": "..."}                  => {"session", "messages", "step", "total"}
     POST /api/message   -> {"session": "...", "text": "..."} => {"messages", "step", "total", "top3"?}
@@ -20,7 +21,8 @@ from langchain_core.messages import HumanMessage
 from ainnovation.app import NAME_QUESTION, agent, answer_texts, build_summary, chat, opening, questions
 from ainnovation.retriever import compute_compatibility
 
-PAGE = Path(__file__).parent / "web" / "index.html"
+WEB_DIR = Path(__file__).parent / "web"
+PAGE = WEB_DIR / "index.html"
 PORT = int(os.environ.get("PORT", "8000"))
 
 # In-memory sessions: id -> {"name", "step", "profile", "messages", "lock"}
@@ -78,6 +80,10 @@ class Handler(BaseHTTPRequestHandler):
         path = self.path.split("?")[0]
         if path in ("/", "/index.html"):
             return self._send(200, PAGE.read_bytes(), "text/html; charset=utf-8")
+        if path.endswith(".png") and (WEB_DIR / path.lstrip("/")).resolve().parent == WEB_DIR.resolve():
+            file = WEB_DIR / path.lstrip("/")  # images next to the page (logo)
+            if file.is_file():
+                return self._send(200, file.read_bytes(), "image/png")
         if path == "/api/health":
             return self._json(200, {"ok": True, "model": chat.model.removeprefix("models/"), "greeting": NAME_QUESTION})
         self._json(404, {"error": "não encontrado"})

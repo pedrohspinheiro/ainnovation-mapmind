@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rumo Académico</title>
+<title>MapMind</title>
+<link rel="icon" type="image/png" href="map_mind_icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block">
@@ -12,32 +13,32 @@
 <style>
 /* Layout: app de coluna única (máx. 760px) com barra de topo fixa, menu lateral, conversa, compositor fixo e navegação inferior com 4 separadores. */
 :root{
-  --bg:#ffffff; --surface:#ffffff; --surface-low:#f5f6fc; --container:#ecedfa; --container-high:#e6e7f4;
-  --ink:#181b24; --ink-2:#45464f; --ink-3:#6b6e7c; --line:#e2e4f0; --line-2:#d8dcf0;
-  --primary:#305FC6; --on-primary:#ffffff; --primary-soft:#E6ECF8;
-  --secondary:#5F80C8; --on-secondary:#ffffff;
-  --ok:#3E67C6; --ok-ink:#2D52A8; --ok-soft:#E6ECF8;
-  --accent:#059669; --accent-ink:#047857; --accent-soft:#D1FAE5; --on-accent:#ffffff;
+  --bg:#ffffff; --surface:#ffffff; --surface-low:#f3f7f8; --container:#e7eff2; --container-high:#dbe7eb;
+  --ink:#0b2b4c; --ink-2:#3d5568; --ink-3:#5f7484; --line:#e1e9ed; --line-2:#d2dfe4;
+  --primary:#0B2B4C; --on-primary:#ffffff; --primary-soft:#e6edf3;
+  --secondary:#186C7D; --on-secondary:#ffffff;
+  --ok:#186C7D; --ok-ink:#145b69; --ok-soft:#e2f0f2;
+  --accent:#46C1A9; --accent-ink:#1d7d6b; --accent-soft:#dcf4ee; --on-accent:#0B2B4C;
   --amber:#d97706; --amber-ink:#b45309; --amber-soft:#fef3c7;
   --err:#ba1a1a; --err-soft:#ffdad6;
-  --bot-bub:#e6f7f9; --bot-ink:#1c2b33; --send-bg:#121417; --send-ink:#ffffff; --focus:#7cc4ea; --mark-soft:#fde68a; --hdr:rgba(255,255,255,.95); --scrim:rgba(6,20,73,.38);
-  --shadow:0 1px 2px rgba(6,20,73,.05),0 2px 6px rgba(6,20,73,.06);
+  --bot-bub:#e9f6f3; --bot-ink:#0b2b4c; --send-bg:#0B2B4C; --send-ink:#ffffff; --focus:#46C1A9; --mark-soft:#fde68a; --hdr:rgba(255,255,255,.95); --scrim:rgba(11,43,76,.38);
+  --shadow:0 1px 2px rgba(11,43,76,.05),0 2px 6px rgba(11,43,76,.07);
   --f-head:"Figtree","Segoe UI",system-ui,sans-serif;
   --f-body:"Figtree","Segoe UI",system-ui,sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0d1020; --surface:#151a2e; --surface-low:#121729; --container:#1e2440; --container-high:#252c4c;
-  --ink:#e6e8f5; --ink-2:#b9bccd; --ink-3:#8f93a8; --line:#262c47; --line-2:#2e3556;
-  --primary:#93ABE2; --on-primary:#071433; --primary-soft:#1B2A55; --secondary:#ADBEE2; --on-secondary:#071433;
-  --ok:#93ABE2; --ok-ink:#B3C5EE; --ok-soft:#1B2A55; --accent:#34D399; --accent-ink:#6EE7B7; --accent-soft:#0F3A2E; --on-accent:#04241A; --amber:#fbbf24; --amber-ink:#fcd34d; --amber-soft:#3d2f0c;
-  --err:#ffb4ab; --err-soft:#5c1a14; --bot-bub:#123238; --bot-ink:#dff5f8; --send-bg:#e6e8f5; --send-ink:#0d1020; --focus:#5aa9d6; --mark-soft:#5b4a12; --hdr:rgba(21,26,46,.95); --scrim:rgba(0,0,0,.55);
+  --bg:#071a2e; --surface:#0d2540; --surface-low:#0a2036; --container:#133050; --container-high:#1a3a5e;
+  --ink:#e6eef4; --ink-2:#b5c6d3; --ink-3:#8ea3b3; --line:#1b3756; --line-2:#244466;
+  --primary:#46C1A9; --on-primary:#062019; --primary-soft:#12384a; --secondary:#6cbccb; --on-secondary:#04161d;
+  --ok:#6cbccb; --ok-ink:#93d0db; --ok-soft:#12384a; --accent:#46C1A9; --accent-ink:#7fdcc8; --accent-soft:#0f3b37; --on-accent:#062019; --amber:#fbbf24; --amber-ink:#fcd34d; --amber-soft:#3d2f0c;
+  --err:#ffb4ab; --err-soft:#5c1a14; --bot-bub:#0f3340; --bot-ink:#ddf3ee; --send-bg:#46C1A9; --send-ink:#071a2e; --focus:#46C1A9; --mark-soft:#5b4a12; --hdr:rgba(13,37,64,.95); --scrim:rgba(0,0,0,.55);
   --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0d1020; --surface:#151a2e; --surface-low:#121729; --container:#1e2440; --container-high:#252c4c;
-  --ink:#e6e8f5; --ink-2:#b9bccd; --ink-3:#8f93a8; --line:#262c47; --line-2:#2e3556;
-  --primary:#93ABE2; --on-primary:#071433; --primary-soft:#1B2A55; --secondary:#ADBEE2; --on-secondary:#071433;
-  --ok:#93ABE2; --ok-ink:#B3C5EE; --ok-soft:#1B2A55; --accent:#34D399; --accent-ink:#6EE7B7; --accent-soft:#0F3A2E; --on-accent:#04241A; --amber:#fbbf24; --amber-ink:#fcd34d; --amber-soft:#3d2f0c;
-  --err:#ffb4ab; --err-soft:#5c1a14; --bot-bub:#123238; --bot-ink:#dff5f8; --send-bg:#e6e8f5; --send-ink:#0d1020; --focus:#5aa9d6; --mark-soft:#5b4a12; --hdr:rgba(21,26,46,.95); --scrim:rgba(0,0,0,.55);
+  --bg:#071a2e; --surface:#0d2540; --surface-low:#0a2036; --container:#133050; --container-high:#1a3a5e;
+  --ink:#e6eef4; --ink-2:#b5c6d3; --ink-3:#8ea3b3; --line:#1b3756; --line-2:#244466;
+  --primary:#46C1A9; --on-primary:#062019; --primary-soft:#12384a; --secondary:#6cbccb; --on-secondary:#04161d;
+  --ok:#6cbccb; --ok-ink:#93d0db; --ok-soft:#12384a; --accent:#46C1A9; --accent-ink:#7fdcc8; --accent-soft:#0f3b37; --on-accent:#062019; --amber:#fbbf24; --amber-ink:#fcd34d; --amber-soft:#3d2f0c;
+  --err:#ffb4ab; --err-soft:#5c1a14; --bot-bub:#0f3340; --bot-ink:#ddf3ee; --send-bg:#46C1A9; --send-ink:#071a2e; --focus:#46C1A9; --mark-soft:#5b4a12; --hdr:rgba(13,37,64,.95); --scrim:rgba(0,0,0,.55);
   --shadow:0 1px 2px rgba(0,0,0,.3); color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
@@ -204,7 +205,7 @@ h1,h2,h3,h4{font-family:var(--f-head);text-wrap:balance;margin:0}
 
 /* menu lateral */
 .scrim{position:fixed;inset:0;background:var(--scrim);z-index:80}
-.drawer{position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);z-index:90;background:var(--surface);transform:translateX(-104%);transition:transform .25s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);box-shadow:4px 0 24px rgba(6,20,73,.18)}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(320px,86vw);z-index:90;background:var(--surface);transform:translateX(-104%);transition:transform .25s ease;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);box-shadow:4px 0 24px rgba(11,43,76,.18)}
 .drawer.open{transform:none}
 .dr-h{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--line)}
 .dr-h .brand b{font-size:16px}
@@ -218,7 +219,7 @@ h1,h2,h3,h4{font-family:var(--f-head);text-wrap:balance;margin:0}
 .dr-foot{margin-top:auto;padding:16px;font-size:12px;color:var(--ink-3);border-top:1px solid var(--line)}
 
 /* folhas (avaliações, definições, ajuda, terminar) */
-.sheet{position:fixed;z-index:100;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;background:var(--surface);border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(6,20,73,.2);padding-block:8px calc(20px + env(safe-area-inset-bottom,0px))}
+.sheet{position:fixed;z-index:100;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;background:var(--surface);border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(11,43,76,.2);padding-block:8px calc(20px + env(safe-area-inset-bottom,0px))}
 @media (min-width:700px){.sheet{left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);width:min(580px,92vw);border-radius:20px;padding-block:8px 20px;max-height:86vh}}
 .sh-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0 12px;border-bottom:1px solid var(--line);margin-bottom:14px;position:sticky;top:-8px;background:var(--surface);z-index:1}
 .sh-h .l{display:flex;align-items:center;gap:10px}
@@ -369,8 +370,15 @@ body{margin:0}
 .typing{display:inline-flex;gap:5px;align-items:center;padding:4px 2px}
 .typing i{width:7px;height:7px;border-radius:50%;background:var(--bot-ink);opacity:.35}
 @media (prefers-reduced-motion:no-preference){.typing i{animation:blink 1.2s infinite}.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}@keyframes blink{40%{opacity:1}}}
-.av.bot .ms{color:var(--primary);font-size:22px}
+/* logo MapMind: transparent PNG on a white tile so the navy strokes read in dark mode too */
+.logo{background:#fff;padding:3px;object-fit:contain;border:1px solid var(--line)}
+.av.bot{background:#fff;border:1px solid var(--line)}
+.av.bot img{width:100%;height:100%;object-fit:contain;display:block}
+.nav-logo{display:block;width:100%;max-width:150px;height:auto;margin:6px auto 10px;padding:10px;background:#fff;border-radius:12px}
+@media (max-width:860px){.nav-logo{display:none}}
+.note a{color:var(--secondary);font-weight:700}
 .why-top a{color:var(--primary)}
+.c1 .rk{color:var(--on-accent)}  /* dark text on the mint circle */
 </style>
 </head>
 <body>
@@ -378,9 +386,9 @@ body{margin:0}
 <!-- ================= TOPO ================= -->
 <header class="hdr">
   <div class="hdr-in wrap gut">
-    <div class="logo" aria-hidden="true"><span class="ms">school</span></div>
+    <img class="logo" src="map_mind_icon.png" alt="" aria-hidden="true">
     <div class="brand">
-      <div class="t"><b>Rumo Académico</b><span class="live-pill" id="enginePill"><i></i><span id="engineTxt">A ligar</span></span></div>
+      <div class="t"><b>MapMind</b><span class="live-pill" id="enginePill"><i></i><span id="engineTxt">A ligar</span></span></div>
       <span class="s">Orientação de percurso académico</span>
     </div>
     <button class="iconbtn" id="restartBtn" title="Recomeçar" aria-label="Recomeçar a conversa"><span class="ms">restart_alt</span></button>
@@ -394,6 +402,7 @@ body{margin:0}
 <!-- ================= CONTEÚDO ================= -->
 <div class="shell wrap gut">
 <nav class="nav" aria-label="Secções">
+  <img class="nav-logo" src="map_mind_logo.png" alt="MapMind">
   <span class="lbl">Navegação</span>
   <button class="nb" data-view="chat" aria-current="page"><span class="ms">chat_bubble</span>Conversa</button>
   <div class="nav-note"><b>Como decide</b>A compatibilidade é calculada em código a partir das tuas respostas e dos dados das 15 áreas. O agente escreve as explicações com base nesses números.</div>
@@ -454,8 +463,8 @@ function row(who, html, cls = ""){
   r.className = `row ${who === "me" ? "me" : ""} ${cls}`;
   const av = who === "me"
     ? `<div class="av me"><span class="ms">person</span></div>`
-    : `<div class="av bot"><span class="ms fill">school</span></div>`;
-  r.innerHTML = `${av}<div class="col"><div class="meta"><b>${who === "me" ? "Tu" : "Rumo"}</b></div>${html}</div>`;
+    : `<div class="av bot"><img src="map_mind_icon.png" alt=""></div>`;
+  r.innerHTML = `${av}<div class="col"><div class="meta"><b>${who === "me" ? "Tu" : "MapMind"}</b></div>${html}</div>`;
   $("log").appendChild(r);
   r.scrollIntoView({behavior:"smooth", block:"end"});
   return r;
